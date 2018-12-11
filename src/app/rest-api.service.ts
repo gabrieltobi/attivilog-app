@@ -28,12 +28,11 @@ export class RestApiService {
         `body was: ${error.error}`);
     }
     // return an observable with a user-facing error message
-    return throwError('Something bad happened; please try again later.');
+    return throwError(error.error);
   }
 
   private extractData(res: Response) {
     let body = res;
-    console.warn(body)
     return body || {};
   }
 

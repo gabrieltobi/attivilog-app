@@ -16,8 +16,11 @@ export class HomePage {
 
   ngOnInit() {
     this.storage.get('userData').then((userData) => {
-      console.log(userData)
-      this.search()
+      if (userData) {
+        return this.search()
+      }
+
+      this.navCtrl.navigateRoot('/acesso');
     });
   }
 

@@ -1,18 +1,20 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Acesso</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-content>
+  <ion-grid padding>
+    <form [formGroup]="form" (ngSubmit)="signIn()">
 
-<ion-content padding>
-  <form [formGroup]="todo" (ngSubmit)="logForm()">
-    <ion-item>
-      <ion-input formControlName="usuario" type="text" placeholder="Usuário"></ion-input>
-    </ion-item>
-    <ion-item>
-      <ion-input formControlName="senha" type="password" placeholder="Senha"></ion-input>
-    </ion-item>
+      <ion-item>
+        <ion-label position="floating">Usuário</ion-label>
+        <ion-input formControlName="usuario" autocapitalize="off" required></ion-input>
+      </ion-item>
+      <ion-item>
+        <ion-label position="floating">Senha</ion-label>
+        <ion-input formControlName="senha" type="password" required></ion-input>
+      </ion-item>
 
-    <ion-button type="submit">Default</ion-button>
-  </form>
+      <div padding>
+        <ion-button type="submit" expand="block">Acessar</ion-button>
+      </div>
+
+    </form>
+  </ion-grid>
 </ion-content>
