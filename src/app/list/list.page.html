@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Notas</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="openFilters()">
+        <ion-icon name="funnel"></ion-icon>
+      </ion-button>
+
+      <ion-button (click)="logout()">
+        <ion-icon name="log-out"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <ion-list *ngFor="let item of items">
+    <ion-list-header color="tertiary">
+      <ion-label>{{item.banco}}</ion-label>
+    </ion-list-header>
+    <ion-item *ngFor="let nota of item.data" (click)="goToDetail(nota)">
+      <ion-label text-wrap>
+        <h3>[{{nota.romaneio}}] {{nota.destinatarionomeoficial}}</h3>
+        <p>{{nota.enderecodestino}}</p>
+      </ion-label>
+    </ion-item>
+  </ion-list>
+</ion-content>

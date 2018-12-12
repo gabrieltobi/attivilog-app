@@ -22,7 +22,7 @@
         width: 100%;
         position: relative;
         z-index: 1;
-        background-color: rgba(185, 104, 14, 0.7);
+        background-color: rgba(var(--ion-color-tertiary-rgb), 0.7);
     }
 
     ion-item {

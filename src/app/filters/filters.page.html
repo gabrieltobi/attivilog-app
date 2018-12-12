@@ -1,0 +1,24 @@
+<ion-header color="primary">
+  <ion-toolbar>
+    <ion-title>Informe os Filtros</ion-title>
+
+    <ion-buttons slot="end">
+      <ion-button (click)="setFilters()">
+        <ion-icon name="checkmark"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <form [formGroup]="form" (ngSubmit)="setFilters()">
+    <ion-item>
+      <ion-label position="floating">Nota Fiscal</ion-label>
+      <ion-input formControlName="notaFiscal" type="number"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label position="floating">CNPJ</ion-label>
+      <ion-input formControlName="destinatarioDocumento1" type="tel" maxLength="18" [brmasker]="{form: form.get('destinatarioDocumento1'), mask: '99.999.999/9999-99'}"></ion-input>
+    </ion-item>
+  </form>
+</ion-content>

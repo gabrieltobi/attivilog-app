@@ -1,12 +1,11 @@
+//Reference: https://www.djamware.com/post/5b5cffaf80aca707dd4f65aa/building-crud-mobile-app-using-ionic-4-angular-6-and-cordova
+
 import { Injectable } from '@angular/core';
 import { Observable, of, throwError } from 'rxjs';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { catchError, tap, map } from 'rxjs/operators';
+import { Storage } from '@ionic/storage';
 
-const httpOptions = {
-  headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-};
-httpOptions.headers.append('token', 'eyJhbGciOiJIUzUxMiJ9.eyJzZW5oYSI6IjgzOTIzOGEiLCJpc3MiOiJodHRwOi8vZG9jd3MuYXR0aXZpbG9nLmNvbS5iciIsInVzdWFyaW8iOiJ0ZXN0ZSJ9.kldqZJKaWnucLOBiYGwNuWrsLLqgVppDk8la_YJV1IWPga0tYI1gkWJ9XNc3EHq7F1jqk5VI32Xt86LuG_mRyw')
 const apiUrl = "http://api-homologacao.attivilog.com.br:3003";
 
 @Injectable({
@@ -14,57 +13,37 @@ const apiUrl = "http://api-homologacao.attivilog.com.br:3003";
 })
 export class RestApiService {
 
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private storage: Storage) { }
 
   private handleError(error: HttpErrorResponse) {
-    if (error.error instanceof ErrorEvent) {
-      // A client-side or network error occurred. Handle it accordingly.
-      console.error('An error occurred:', error.error.message);
-    } else {
-      // The backend returned an unsuccessful response code.
-      // The response body may contain clues as to what went wrong,
-      console.error(
-        `Backend returned code ${error.status}, ` +
-        `body was: ${error.error}`);
-    }
-    // return an observable with a user-facing error message
-    return throwError(error.error);
+    return throwError({ error: error.error, message: error.message });
   }
 
   private extractData(res: Response) {
-    let body = res;
-    return body || {};
+    return res || {};
   }
 
-  get(api): Observable<any> {
-    const url = apiUrl + api;
-    return this.http.get(url, httpOptions).pipe(
-      map(this.extractData),
-      catchError(this.handleError));
-  }
-
-  post(api, data): Observable<any> {
-    const url = apiUrl + api;
-    return this.http.post(url, data, httpOptions)
+  post(api, data, token): Observable<any> {
+    return this.http.post(this.getUrl(api), data, this.getOptions(token))
       .pipe(
         map(this.extractData),
         catchError(this.handleError)
       );
   }
 
-  put(api, data): Observable<any> {
-    const url = apiUrl + api;
-    return this.http.put(url, data, httpOptions)
-      .pipe(
-        catchError(this.handleError)
-      );
+  getUrl(api) {
+    return (apiUrl + api);
   }
 
-  delete(api): Observable<{}> {
-    const url = apiUrl + api;
-    return this.http.delete(url, httpOptions)
-      .pipe(
-        catchError(this.handleError)
-      );
+  getOptions(token) {
+    const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
+    headers.append('token', token);
+
+    return { headers }
+  }
+
+  async getToken() {
+    const userData = await this.storage.get('userDate') || {};
+    return userData.token;
   }
 }

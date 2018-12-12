@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Validators, FormBuilder, FormGroup, FormControl, AbstractControl } from '@angular/forms';
+import { Validators, FormBuilder, FormGroup } from '@angular/forms';
 import { LoadingController } from '@ionic/angular';
 import { RestApiService } from '../rest-api.service';
 import { Storage } from '@ionic/storage';
@@ -11,8 +11,8 @@ import { ToastController } from '@ionic/angular';
   templateUrl: './signin.page.html',
   styleUrls: ['./signin.page.scss'],
 })
-export class SigninPage {
-  private form: FormGroup;
+export class SigninPage implements OnInit {
+  form: FormGroup;
 
   constructor(private formBuilder: FormBuilder, public api: RestApiService, public loadingCtrl: LoadingController, private storage: Storage, private navCtrl: NavController, public toastController: ToastController) {
     this.form = this.formBuilder.group({
@@ -21,26 +21,40 @@ export class SigninPage {
     });
   }
 
-  signIn() {
+  ngOnInit() {
+    this.storage.get('userData').then((userData) => {
+      if (userData) {
+        this.navCtrl.navigateRoot('/lista');
+      }
+    });
+  }
+
+  async signIn() {
     if (!this.validate()) {
       return;
     }
 
-    this.loadingCtrl.create({ message: 'Autenticando' })
-      .then(loading => {
-        loading.present();
+    const loading = await this.loadingCtrl.create({ message: 'Autenticando' })
+    loading.present();
 
-        this.api.post('/auth', this.form.value)
-          .subscribe(res => {
-            this.storage.set('userData', res);
-            this.navCtrl.navigateForward('/lista');
-            loading.dismiss();
-          }, (error) => {
-            this.toastController.create({ message: error, duration: 4000, color: 'danger' })
-              .then(toast => toast.present());
-            loading.dismiss();
-          });
+    this.api.post('/auth', this.form.value, await this.api.getToken)
+      .subscribe(async (res) => {
+        await this.storage.set('userData', res);
+        await this.navCtrl.navigateForward('/lista');
+        loading.dismiss();
+      }, (error) => {
+        this.toastController.create({ message: this.getErrorMessage(error), duration: 4000, color: 'danger' })
+          .then(toast => toast.present());
+        loading.dismiss();
       });
+  }
+
+  getErrorMessage(error) {
+    if (typeof error.error === 'string') {
+      return error.error;
+    }
+
+    return error.message;
   }
 
   validate() {
